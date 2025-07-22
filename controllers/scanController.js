@@ -21,7 +21,7 @@ export const runSecurityScan = async (req, res) => {
     if (input.url.includes("devsec-buddy-backend.onrender.com")) {
       try {
         await axios.get("https://devsec-buddy-backend.onrender.com/healthz", {
-          timeout: 5000,
+          timeout: 10000,
         });
         console.log("✅ Pre-wake successful for Render");
       } catch (err) {

@@ -20,27 +20,24 @@ def get_gemini_remediation(scan_report: Union[dict, str]) -> str:
             formatted_report = scan_report  # fallback if already string
 
         prompt = f"""
-You are a professional application security analyst.
+You are an expert security analyst.
 
-A website security scan has produced the following results:
+A website scan report is given below:
 
 {formatted_report}
 
 ---
+🎯 Your job:
+Give a ** short summary** of issues (2-3 line per issue) with:
+- 🔧 **Simple Fix** (two line)
+- 🛑 **Severity** (Low/Medium/High/Critical)
 
-🎯 Your task:
-1. Explain **what each issue means** in simple terms.
-2. Suggest **clear remediation or mitigation steps**.
-3. Provide **severity rating** (Low/Medium/High/Critical).
-4. Use **bullet points** or markdown formatting for clarity.
+Use bullet points (•). No long explanations. No repetition. Limit output to max 20-25 lines if possible.
 """
 
         response = model.generate_content(prompt)
 
-        if response.text:
-            return response.text.strip()
-        else:
-            return "⚠️ Gemini returned an empty response. Please try again."
+        return response.text.strip() if response.text else "⚠️ Gemini returned an empty response."
 
     except Exception as e:
         return f"❌ Gemini analysis failed: {str(e)}"
