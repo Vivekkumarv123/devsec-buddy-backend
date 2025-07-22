@@ -5,12 +5,14 @@ import scanRoutes from "./routes/scanRoutes.js";
 
 const app = express();
 
-// Replace this with your actual frontend URL
-const allowedOrigin = "http://localhost:3000";
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://devsec-buddy-frontend.vercel.app",
+];
 
 // Middlewares
 app.use(cors({
-  origin: allowedOrigin
+  origin: allowedOrigins
 }));
 app.use(helmet()); // Security headers
 app.use(express.json());
