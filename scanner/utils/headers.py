@@ -1,29 +1,37 @@
+# headers.py
+
 import requests
+
+SECURITY_HEADERS = {
+    "Content-Security-Policy": "high",
+    "Strict-Transport-Security": "high",
+    "X-Content-Type-Options": "medium",
+    "X-Frame-Options": "medium",
+    "X-XSS-Protection": "medium",
+    "Referrer-Policy": "low",
+    "Permissions-Policy": "low"
+}
 
 def check_security_headers(url):
     try:
-        response = requests.get(url, timeout=5)
-        headers = response.headers
-
-        expected_headers = [
-            "Content-Security-Policy",
-            "Strict-Transport-Security",
-            "X-Content-Type-Options",
-            "X-Frame-Options",
-            "X-XSS-Protection",
-            "Referrer-Policy",
-            "Permissions-Policy"
-        ]
-
+        response = requests.get(url, timeout=10)
+        present = []
         missing = []
-        for header in expected_headers:
-            if header not in headers:
+
+        for header, severity in SECURITY_HEADERS.items():
+            if header in response.headers:
+                present.append(header)
+            else:
                 missing.append(header)
 
         return {
             "status_code": response.status_code,
+            "present": present,
             "missing": missing,
-            "present": [h for h in expected_headers if h in headers]
+            "severity": "medium" if missing else "safe"
         }
     except Exception as e:
-        return { "error": str(e) }
+        return {
+            "error": f"Header check failed: {str(e)}",
+            "severity": "critical"
+        }

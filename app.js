@@ -1,40 +1,25 @@
-import express from 'express';
-import { execFile } from 'child_process';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// app.js or server.js
+
+import express from "express";
+import cors from "cors";
+import scanRoutes from "./routes/scanRoutes.js";
 
 const app = express();
+
+// Middlewares
+app.use(cors());
 app.use(express.json());
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Routes
+app.use("/api", scanRoutes);
 
-app.post('/api/scan', (req, res) => {
-  const { url } = req.body;
-
-  console.log(`📡 Scan request received for URL: ${url}`); // ✅ Add this
-  const pythonScript = path.join(__dirname, '/scanner/main.py');
-
-  execFile('python', [pythonScript, url], (error, stdout, stderr) => {
-    console.log('🚀 Starting Python script...'); // ✅ Add this
-
-    if (error) {
-      console.error('❌ Scanner error:', error);
-      return res.status(500).json({ error: 'Scanner failed to execute' });
-    }
-
-    try {
-      console.log('📦 Python stdout:', stdout); // ✅ Output from scanner
-      const result = JSON.parse(stdout);
-      res.json(result);
-    } catch (parseError) {
-      console.error('⚠️ Invalid scanner output:', parseError);
-      res.status(500).json({ error: 'Failed to parse scanner output' });
-    }
-  });
+// Root
+app.get("/", (req, res) => {
+  res.send("🚀 DevSec Buddy backend is running!");
 });
 
-
-const PORT = process.env.PORT || 4000;
+// Server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🔐 DevSec Buddy backend running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });

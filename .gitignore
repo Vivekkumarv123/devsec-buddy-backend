@@ -12,7 +12,7 @@ __pycache__/
 *.pyd
 env/
 venv/
-*.env
+*.env.local
 *.egg-info/
 
 # macOS
