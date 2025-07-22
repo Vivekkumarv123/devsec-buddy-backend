@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.get('/healthz', (req, res) => res.send('OK, Working Well!'));
 app.use("/api", scanRoutes);
 
 // Root
