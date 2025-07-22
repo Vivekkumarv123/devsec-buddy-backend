@@ -1,17 +1,10 @@
 // controllers/scanController.js
 
 import { spawn } from "child_process";
+import axios from "axios";
 
 /**
  * POST /api/scan
- * Body: {
- *   url: string,
- *   profile: "basic" | "standard" | "deep",
- *   method?: "GET" | "POST" | "PUT" | etc,
- *   data?: { ... },
- *   headers?: { ... },
- *   cookies?: { ... }
- * }
  */
 export const runSecurityScan = async (req, res) => {
   try {
@@ -23,6 +16,18 @@ export const runSecurityScan = async (req, res) => {
       headers: req.body.headers || null,
       cookies: req.body.cookies || null,
     };
+
+    // ✅ Pre-wake Render backend if scanned URL is your own server
+    if (input.url.includes("devsec-buddy-backend.onrender.com")) {
+      try {
+        await axios.get("https://devsec-buddy-backend.onrender.com/healthz", {
+          timeout: 5000,
+        });
+        console.log("✅ Pre-wake successful for Render");
+      } catch (err) {
+        console.warn("⚠️ Pre-wake failed:", err.message);
+      }
+    }
 
     const python = spawn("python", ["scanner/main.py"]);
 
